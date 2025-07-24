@@ -7,14 +7,14 @@ Il prend en compte un grand nombre de phénomènes physiques et permet une perso
 
 ## 🧠 Fonctionnalités principales
 
-- 🌍 Gravité variable avec l'altitude
+- 🌍 Gravité et densité de l'air variables avec l'altitude
 - 🌬️ Vent configurable (profil réel CSV ou vent constant)
-- 💨 Traînée aérodynamique avec CD dynamique (selon Mach)
+- 💨 Traînée aérodynamique avec CD dynamique (selon Mach) ou statique
 - 🎯 Effet Magnus (si rotation active)
 - 🌐 Effet Coriolis selon la latitude
-- 🔥 Poussée avec combustion (masse variable)
+- 🔥 Poussée avec combustion (masse variable) si activée
 - 📊 Visualisation 2D et 3D (trajectoire, vitesse, Mach, etc.)
-- 🎥 Animation temps réel interactive
+- 🎥 Animation 3D en temps réel interactive
 
 ---
 
@@ -33,13 +33,11 @@ L'utilisateur peut activer/désactiver chaque phénomène physique ou graphique.
 ### 🚀 Missile & Propulsion
 | Paramètre         | Description                              |
 |-------------------|------------------------------------------|
-| `use_thrust`      | Active la poussée avec combustion        |
 | `initial_mass`    | Masse de départ                          |
 | `final_mass`      | Masse après combustion                   |
 | `burn_time`       | Durée de la poussée                      |
 | `thrust`          | Intensité de la poussée (N)              |
-| `CD`              | Coefficient de traînée (fixe ou variable)|
-| `enable_dynamic_CD`| CD dépendant du Mach                    |
+| `CD`              | Coefficient de traînée (si fixé)         |
 | `radius`          | Rayon du projectile (effet Magnus)       |
 | `spin_rate`       | Vitesse de rotation (rpm)                |
 | `C_M`             | Coefficient de Magnus                    |
@@ -54,11 +52,15 @@ L'utilisateur peut activer/désactiver chaque phénomène physique ou graphique.
 | `wind_elev_deg`     | Angle d’élévation du vent (°)         |
 
 ### 🔬 Modèles physiques
-- `enable_drag`
-- `enable_magnus`
-- `enable_coriolis`
-- `enable_variable_gravity`
-- `enable_latitude_variation`
+| Option                      | Description                                                            |
+| --------------------------- | ---------------------------------------------------------------------- |
+| `enable_drag`               | Active la traînée aérodynamique en fonction de la vitesse              |
+| `enable_magnus`             | Active l’effet Magnus dû à la rotation du projectile                   |
+| `enable_coriolis`           | Prend en compte l’effet Coriolis lié à la rotation terrestre           |
+| `enable_variable_gravity`   | Modélise une gravité variant avec l'altitude                           |
+| `enable_latitude_variation` | Met à jour dynamiquement la latitude (utile avec Coriolis)             |
+| `enable_dynamic_CD`         | Rend le coefficient de traînée dépendant du Mach (plutôt que constant) |
+| `use_thrust`                | Active la propulsion (sinon le projectile est en chute libre)          |
 
 ### 📺 Affichage
 | Option                    | Description                                 |
@@ -72,7 +74,7 @@ L'utilisateur peut activer/désactiver chaque phénomène physique ou graphique.
 ## 🧪 Installation
 
 ```bash
-git clone https://github.com/YoanBlochet/ballistic-simulator.git
+git clone https://github.com/YoanBlochet/ballistics-simulator.git
 cd ballistic-simulator
 pip install -r requirements.txt
 ```
