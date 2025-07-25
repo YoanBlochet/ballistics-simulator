@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d, RegularGridInterpolator
+from config import k_drag_cor
 
 ###################### CONSTANTES PHYSIQUES #######################
 
@@ -216,8 +217,7 @@ def base_cd_mach_shape(mach, forme="ogive_tangent"):
         return cd_sup
 
 def drag_correction_angle(alpha_deg):
-    k = 0.01  # ajustable selon le projectile
-    return k * (alpha_deg ** 2)
+    return k_drag_cor * (alpha_deg ** 2)
 
 def total_cd(shape, mach, alpha_deg):
     cd0 = base_cd_mach_shape(mach, shape)

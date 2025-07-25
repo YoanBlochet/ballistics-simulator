@@ -16,6 +16,8 @@ A_front = 0.044                         # Surface frontale (m²)
 CD = 0.5                                # Coefficient de traînée (CD) — utilisé si enable_dynamic_CD = False
 enable_dynamic_CD = True                # Faire varier CD selon Mach
 nose_shape = "ogive_tangent"            # Forme du nez : "conical", "ogive_tangent", "ogive_secant", "blunt", "hemispherical"
+k_drag_cor = 0.01                       # Coefficient de correction de trainée : CD = CD_dynamic + CD_drag_corr
+                                        # CD_drag_corr = k_drag_cor * (angle_attaque_en_degrés) ** 2
 
 ##############################################
 #           PORTANCE AÉRODYNAMIQUE           #
