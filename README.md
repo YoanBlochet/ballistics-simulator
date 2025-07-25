@@ -1,134 +1,219 @@
-# 🚀 Simulation Balistique Avancée
+# 🚀 Simulateur Balistique Atmosphérique – Python
 
-Ce simulateur Python modélise la trajectoire balistique d’un projectile/missile dans un environnement atmosphérique réaliste.  
-Il prend en compte un grand nombre de phénomènes physiques et permet une personnalisation complète via un fichier de configuration.
+Projet personnel développé en tant qu'élève ingénieur en 1ère année à l’[ISAE-ENSMA](https://www.ensma.fr).
+Ce simulateur modélise la trajectoire d’un missile/projetile dans un environnement atmosphérique 3D réaliste, avec prise en compte fine de nombreux phénomènes physiques. Il se veut particulièrement modulable et personnalisable.
 
----
-
-## 🧠 Fonctionnalités principales
-
-- 🌍 Gravité et densité de l'air variables avec l'altitude
-- 🌬️ Vent configurable (profil réel CSV ou vent constant)
-- 💨 Traînée aérodynamique avec CD dynamique (selon Mach) ou statique
-- 🎯 Effet Magnus (si rotation active)
-- 🌐 Effet Coriolis selon la latitude
-- 🔥 Poussée avec combustion (masse variable) si activée
-- 📊 Visualisation 2D et 3D (trajectoire, vitesse, Mach, etc.)
-- 🎥 Animation 3D en temps réel interactive
+Ce projet vise à démontrer des compétences en modélisation physique, calcul scientifique, architecture logicielle Python et visualisation.
 
 ---
 
-## ⚙️ Configuration complète (`config.py`)
+## 🧠 Fonctionnalités majeures
 
-L'utilisateur peut activer/désactiver chaque phénomène physique ou graphique.
-
-### 🎯 Paramètres de tir
-| Paramètre        | Description                        |
-|------------------|------------------------------------|
-| `elev`           | Angle d’élévation (en degrés)      |
-| `azim`           | Azimut du tir (0° Est, 90° Nord)   |
-| `v0`             | Vitesse initiale (utile sans poussée) |
-| `latitude_deg`   | Latitude initiale (pour Coriolis)  |
-
-### 🚀 Missile & Propulsion
-| Paramètre         | Description                              |
-|-------------------|------------------------------------------|
-| `initial_mass`    | Masse de départ                          |
-| `final_mass`      | Masse après combustion                   |
-| `burn_time`       | Durée de la poussée                      |
-| `thrust`          | Intensité de la poussée (N)              |
-| `CD`              | Coefficient de traînée (si fixé)         |
-| `radius`          | Rayon du projectile (effet Magnus)       |
-| `spin_rate`       | Vitesse de rotation (rpm)                |
-| `C_M`             | Coefficient de Magnus                    |
-
-### 🌬️ Vent
-| Paramètre           | Description                           |
-|---------------------|---------------------------------------|
-| `use_wind_profile`  | Active le profil de vent CSV          |
-| `csv_path`          | Fichier CSV radiosondé                |
-| `wind_speed`        | Vitesse du vent constant              |
-| `wind_azim_deg`     | Direction du vent (°)                 |
-| `wind_elev_deg`     | Angle d’élévation du vent (°)         |
-
-### 🔬 Modèles physiques
-| Option                      | Description                                                            |
-| --------------------------- | ---------------------------------------------------------------------- |
-| `enable_drag`               | Active la traînée aérodynamique en fonction de la vitesse              |
-| `enable_magnus`             | Active l’effet Magnus dû à la rotation du projectile                   |
-| `enable_coriolis`           | Prend en compte l’effet Coriolis lié à la rotation terrestre           |
-| `enable_variable_gravity`   | Modélise une gravité variant avec l'altitude                           |
-| `enable_latitude_variation` | Met à jour dynamiquement la latitude (utile avec Coriolis)             |
-| `enable_dynamic_CD`         | Rend le coefficient de traînée dépendant du Mach (plutôt que constant) |
-| `use_thrust`                | Active la propulsion (sinon le projectile est en chute libre)          |
-
-### 📺 Affichage
-| Option                    | Description                                 |
-|---------------------------|---------------------------------------------|
-| `show_3d_trajectory`      | Affiche la trajectoire 3D colorée par Mach  |
-| `show_2d_graphs`          | Affiche les graphes (altitude, vitesse...)  |
-| `show_realtime_animation` | Animation 3D temps réel                     |
+* 🌍 Gravité variable avec l’altitude
+* 🌬️ Modélisation avancée du vent (profil réel ou vent constant)
+* 💨 Trainée aérodynamique dynamique (selon Mach, angle d’attaque, profil nez)
+* 🪂 Portance aérodynamique avec modèle ou profil CSV dynamique
+* 🔁 Effet Magnus (si rotation active)
+* 🌐 Effet Coriolis + variation dynamique de latitude
+* 🔥 Propulsion avec combustion (masse variable ou profils de varariation masse/pousssée CSV)
+* ⚙️ Solveur numérique adaptatif avec profils prédéfinis (RK45, DOP853, etc.)
+* 🧪 Export des données (CSV, PNG, GIF)
+* 📊 Visualisations 2D/3D dynamiques + animation temps réel
 
 ---
 
-## 🧪 Installation
+## 📂 Organisation du projet
 
-```bash
-git clone https://github.com/YoanBlochet/ballistics-simulator.git
-cd ballistic-simulator
-pip install -r requirements.txt
+```
+ballistic-simulator/
+│
+├── main/                    # Scripts principaux
+│   ├── simulator.py         # Point d’entrée de la simulation
+│   ├── utils.py             # Fonctions physiques et outils
+│   └── config.py            # Fichier de configuration central
+│
+├── data/                    # Données d'entrée utilisateur
+│   ├── wind_data.csv        # Profil atmosphérique mesuré (radiosondage)
+│   ├── aero_data.csv        # Profil aérodynamique du projectile (soufflerie)
+│   └── thrust_data.csv      # Profil de poussée temporel (essais moteur)
+│
+├── exports/                 # Dossiers de sortie (.csv, .png, .gif)
+│
+├── README.md                # Ce fichier
+└── requirements.txt         # Dépendances Python
 ```
 
 ---
 
-## ▶️ Utilisation
+## ⚙️ Configuration détaillée (`config.py`)
+
+### 🎯 Paramètres de tir
+
+| Paramètre      | Description                  |
+| -------------- | ---------------------------- |
+| `elev`         | Angle d’élévation du tir (°) |
+| `azim`         | Azimut du tir (°)            |
+| `v0`           | Vitesse initiale (m/s)       |
+| `latitude_deg` | Latitude initiale du tir (°) |
+
+---
+
+### 💨 Traînée aérodynamique (CD)
+
+| Paramètre           | Description                              |
+| ------------------- | ---------------------------------------- |
+| `enable_drag`       | Active la traînée                        |
+| `A_front`           | Surface frontale (m²)                    |
+| `enable_dynamic_CD` | Active le modèle dynamique CD(Mach, AoA) |
+| `CD`                | Valeur fixe si dynamique désactivé       |
+| `nose_shape`        | Forme du nez (affecte CD dynamique)      |
+| `k_drag_cor`        | Correction liée à l’angle d’attaque      |
+
+---
+
+### ✈️ Portance (CL)
+
+| Paramètre       | Description                          |
+| --------------- | ------------------------------------ |
+| `enable_lift`   | Active la portance                   |
+| `A_port`        | Surface portante (m²)                |
+| `CL`            | Coefficient de portance (fixe)       |
+| `use_aero_data` | Chargement profil CD/CL dynamiques   |
+| `csv_path_aero` | Chemin vers le fichier CSV de profil |
+
+---
+
+### 🚀 Propulsion & Masse variable
+
+| Paramètre            | Description                      |
+| -------------------- | -------------------------------- |
+| `use_thrust`         | Active la poussée                |
+| `initial_mass`       | Masse au lancement               |
+| `final_mass`         | Masse finale (post-combustion)   |
+| `thrust_duration`    | Durée de combustion              |
+| `thrust`             | Poussée (N) si non dynamique     |
+| `use_thrust_profile` | Active profil de poussée         |
+| `csv_path_thrust`    | Fichier CSV du profil de poussée |
+
+---
+
+### 🌬️ Vent atmosphérique
+
+| Paramètre          | Description                    |
+| ------------------ | ------------------------------ |
+| `use_wind_profile` | Utilise profil de vent (CSV)   |
+| `csv_path`         | Fichier de données météo       |
+| `wind_speed`       | Vent constant alternatif (m/s) |
+| `wind_azim_deg`    | Direction du vent (°)          |
+| `wind_elev_deg`    | Angle d’élévation du vent (°)  |
+
+---
+
+### 🧪 Autres modèles physiques
+
+| Paramètre                   | Description                         |
+| --------------------------- | ----------------------------------- |
+| `enable_variable_gravity`   | Gravité variable selon altitude     |
+| `enable_coriolis`           | Effet Coriolis                      |
+| `enable_latitude_variation` | Latitude dynamique (avec mouvement) |
+| `enable_magnus`             | Effet Magnus                        |
+| `spin_rate`                 | Taux de rotation (rpm)              |
+| `C_M`                       | Coefficient Magnus                  |
+| `radius`                    | Rayon du projectile                 |
+
+---
+
+### 🖼️ Affichage & export
+
+| Paramètre                 | Description            |
+| ------------------------- | ---------------------- |
+| `show_3d_trajectory`      | Affiche trajectoire 3D |
+| `show_2d_graphs`          | Affiche graphes        |
+| `show_realtime_animation` | Animation interactive  |
+| `export_simulation_data`  | Export CSV brut        |
+| `export_trajectory`       | Export CSV trajectoire |
+| `export_data_plots`       | Export PNG graphes     |
+| `export_anim`             | Export GIF animation   |
+
+---
+
+### 🧮 Configuration du solveur
+
+| Paramètre             | Description                                          |
+| --------------------- | ---------------------------------------------------- |
+| `ACTIVE_PROFILE`      | Profil de simulation (`DEFAULT`, `FAST_ROUGH`, etc.) |
+| `solver_config`       | Paramètres internes dynamiques                       |
+| `enable_solver_debug` | Affichage console résolution                         |
+
+---
+
+## ✅ Profils du solveur
+
+| Nom              | Objectif                                  | Méthodes utilisées |
+| ---------------- | ----------------------------------------- | ------------------ |
+| `DEFAULT`        | Adaptatif (balance perf/précision)        | RK45 + DOP853      |
+| `HIGH_PRECISION` | Précision maximale                        | DOP853             |
+| `FAST_ROUGH`     | Résolution rapide approximative           | RK23               |
+| `ULTRA_STABLE`   | Résolution robuste (situations critiques) | RK23               |
+| `FALLBACK`       | Mode de secours (si instabilité)          | RK23               |
+| `EMERGENCY`      | Ultime stabilité                          | RK23               |
+
+---
+
+## ▶️ Lancement de la simulation
 
 ```bash
 python simulator.py
 ```
 
-Visualisations et logs s’affichent à la fin de la simulation.
+Les graphes, animations et données sont affichées / exportées selon `config.py`.
 
 ---
 
-## 📁 Organisation du projet
-
-| Fichier / Dossier | Rôle                                                                 |
-|-------------------|----------------------------------------------------------------------|
-| `simulator.py`    | Script principal (simulation, affichage)                             |
-| `utils.py`        | Fonctions physiques (atmosphère, forces, interpolation...)           |
-| `config.py`       | Paramètres globaux de simulation                                     |
-| `wind_data.csv`   | Données radiosondées (externe, optionnel)                            |
-| `requirements.txt`| Dépendances Python                                                   |
-
----
-
-## ✅ Exemple de sortie console
+## 📊 Exemple de sortie console
 
 ```
-Temps de vol : 28.75 s
-Altitude maximale : 9821.30 m
-Distance sol parcourue : 22312.50 m
-Angle d'impact : -34.20°
+Simulation complexe détectée (portance=True, Magnus=True, poussée=True)
+Phase poussée: durée=2.108s, méthode=RK45
+Phase vol libre: méthode=DOP853
+Résolution réussie avec 10576 points
+Temps de vol : 42.58 s
+Altitude maximale : 1998.85 m
+Distance sol parcourue : 179.90 m
+Angle d'impact : -86.48°
+Altitude à la fin de poussée : 929.05 m
+Vitesse à la fin de poussée : 564.91 m/s
+Vitesse maximale atteinte : 654.78 m/s
+Vitesse à l’impact : 84.53 m/s
+Pré-calcul des données d'animation...
+Démarrage de l'animation (1064 frames à 25 fps)...
+Animation 3D optimisée terminée !
 ```
 
 ---
 
-## 📊 Exemples de visualisations
+## 🧪 Dépendances (`requirements.txt`)
 
-- ✅ **Trajectoire 3D** : colorée selon Mach, avec repères (fin poussée, Mach 1)
-- ✅ **Graphiques 2D** : altitude, vitesse, vitesse horizontale, Mach vs temps
-- ✅ **Animation** : mise à jour temps réel de l'état du missile (altitude, vitesse, Mach)
+```txt
+numpy
+scipy
+matplotlib
+pandas
+csv
+```
+
+---
+
+## 🎓 Auteur
+
+Projet personnel réalisé par **Yoan Blochet**,
+Élève ingénieur à l’[ISAE-ENSMA](https://www.ensma.fr), promotion 2028.
+Conçu dans une optique de **démonstration technique**, de **modélisation physique avancée**, et de **valorisation en recrutement ingénieur / stage**.
 
 ---
 
 ## 🔒 Licence
 
-Distribué sous licence MIT. Voir [LICENSE](LICENSE).
+Ce projet est sous licence MIT – Voir le fichier [LICENSE](LICENSE).
 
 ---
-
-## 🙋‍♂️ Auteur
-
-Projet Personnel développé par un élève ingénieur à l’[ISAE-ENSMA](https://www.ensma.fr/) en début de 1ère année, dans un objectif de démonstration technique et d’application physique avancée.
-
