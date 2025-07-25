@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from scipy.interpolate import interp1d
+from scipy.interpolate import interp1d, RegularGridInterpolator
 
 ###################### CONSTANTES PHYSIQUES #######################
 
@@ -187,16 +187,106 @@ def get_mass(t, burn_time, initial_mass, final_mass):
 
     m = initial_mass - (initial_mass - final_mass) * (t / burn_time)
     return m  # Poussée brute (le vecteur sera orienté dans simulator.py)
-
-def dynamic_CD(mach):
+    
+def base_cd_mach_shape(mach, forme="ogive_tangent"):
     """
-    Interpolation linéaire de C_D en fonction du Mach.
+    Retourne un coefficient de traînée (Cd) en fonction du Mach et de la forme de l'objet.
+    Les valeurs sont approximées à partir de données aérodynamiques classiques.
     """
-    # Table simplifiée du CD en fonction de Mach
-    mach_table = [0.0, 0.8, 1.0, 1.2, 2.0, 3.0, 5.0]
-    cd_table   = [0.3, 0.3, 0.9, 0.6, 0.5, 0.4, 0.35]
 
-    CD_interp = interp1d(mach_table, cd_table, kind='linear', fill_value="extrapolate")
+    profils = {
+        "ogive_tangent":   (0.10, 0.30, 0.18),
+        "ogive_secant":    (0.12, 0.35, 0.20),
+        "conical":         (0.15, 0.40, 0.25),
+        "hemispherical":   (0.30, 0.60, 0.40),
+        "blunt":           (0.50, 0.90, 0.60),
+    }
 
-    return float(CD_interp(mach))
+    cd_sub, cd_pic, cd_sup = profils.get(forme, (0.2, 0.4, 0.3))
 
+    if mach < 0.8:
+        return cd_sub
+    elif mach < 1.2:
+        # Transition linéaire vers le pic
+        return cd_sub + (cd_pic - cd_sub) * ((mach - 0.8) / 0.4)
+    elif mach < 3.0:
+        # Descente linéaire vers le Cd supersonique
+        return cd_pic + (cd_sup - cd_pic) * ((mach - 1.2) / (3.0 - 1.2))
+    else:
+        return cd_sup
+
+def drag_correction_angle(alpha_deg):
+    k = 0.01  # ajustable selon le projectile
+    return k * (alpha_deg ** 2)
+
+def total_cd(shape, mach, alpha_deg):
+    cd0 = base_cd_mach_shape(mach, shape)
+    cd_alpha = drag_correction_angle(alpha_deg)
+    return cd0 + cd_alpha
+
+def angle_of_attack(v_proj, orientation):
+    """
+    Calcule l'angle d'incidence (alpha) entre la vitesse et l'orientation du missile
+    """
+
+    if np.linalg.norm(v_proj) == 0 or np.linalg.norm(orientation) == 0:
+        return 0.0
+    cos_angle = np.dot(v_proj, orientation) / (np.linalg.norm(v_proj) * np.linalg.norm(orientation))
+    cos_angle = np.clip(cos_angle, -1.0, 1.0)
+    alpha_rad = np.arccos(cos_angle)
+    return np.degrees(alpha_rad)
+
+def load_thrust_mass_profile(csv_path, empty_mass):
+    """
+    Charge un fichier CSV contenant les colonnes : t, f, m
+    Retourne : (thrust_fn, mass_fn, burn_time)
+    """
+    df = pd.read_csv(csv_path)
+    burn_time = df['t'].max()
+
+    # Poussée : 0 en dehors du burn time
+    thrust_fn = interp1d(df['t'], df['f'], bounds_error=False, fill_value=0.0)
+
+    # Masse totale = masse vide + carburant restant
+    mass_total = empty_mass + df['m']
+    mass_fn = interp1d(df['t'], mass_total, bounds_error=False, fill_value=(mass_total.iloc[0], empty_mass))
+
+    return thrust_fn, mass_fn, burn_time
+
+def load_aero_coeffs(csv_path):
+    """
+    Charge un fichier CSV contenant les colonnes : mach, alpha, cd et cl
+    Retourne : (cd_fn, cl_fn)
+    """
+
+    df = pd.read_csv(csv_path)
+
+    if not {'mach', 'alpha', 'cd', 'cl'}.issubset(df.columns):
+        raise ValueError("Le fichier CSV doit contenir les colonnes : mach, alpha, cd, cl")
+
+    # Tri unique des valeurs
+    mach_vals = np.sort(df['mach'].unique())
+    alpha_vals = np.sort(df['alpha'].unique())
+
+    # Création des grilles de CD et CL
+    cd_grid = np.full((len(mach_vals), len(alpha_vals)), np.nan)
+    cl_grid = np.full_like(cd_grid, np.nan)
+
+    for i, mach in enumerate(mach_vals):
+        for j, alpha in enumerate(alpha_vals):
+            subset = df[(df['mach'] == mach) & (df['alpha'] == alpha)]
+            if not subset.empty:
+                cd_grid[i, j] = subset['cd'].values[0]
+                cl_grid[i, j] = subset['cl'].values[0]
+
+    # Interpolateurs 2D (mach, alpha) → cd / cl
+    cd_interp = RegularGridInterpolator((mach_vals, alpha_vals), cd_grid, bounds_error=False, fill_value=None)
+    cl_interp = RegularGridInterpolator((mach_vals, alpha_vals), cl_grid, bounds_error=False, fill_value=None)
+
+    def cd_fn(mach, alpha):
+        return cd_interp([[mach, alpha]])[0]
+
+    def cl_fn(mach, alpha):
+        return cl_interp([[mach, alpha]])[0]
+
+    return cd_fn, cl_fn
