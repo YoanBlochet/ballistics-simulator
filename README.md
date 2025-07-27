@@ -1,9 +1,10 @@
 # 🚀 Simulateur Balistique Atmosphérique – Python
 
-Projet personnel développé en tant qu'élève ingénieur en 1ère année à l’[ISAE-ENSMA](https://www.ensma.fr).
-Ce simulateur modélise la trajectoire d’un missile/projetile dans un environnement atmosphérique 3D réaliste, avec prise en compte fine de nombreux phénomènes physiques. Il se veut particulièrement modulable et personnalisable.
+Projet personnel développé en tant qu'élève ingénieur en 1ère année à l’[ISAE-ENSMA](https://www.ensma.fr)
+Ce simulateur modélise la trajectoire d’un missile/projetile dans un environnement atmosphérique 3D, avec prise en compte fine de nombreux phénomènes physiques. Il se veut particulièrement modulable et personnalisable.
 
 Ce projet vise à démontrer des compétences en modélisation physique, calcul scientifique, architecture logicielle Python et visualisation.
+Je précise que n'étant qu'en 1ère année, la prise en compte dynamique de la portance et de la trainée sont partiellement simplifiés.
 
 ---
 
@@ -27,10 +28,10 @@ Ce projet vise à démontrer des compétences en modélisation physique, calcul 
 ```
 ballistic-simulator/
 │
-├── main/                    # Scripts principaux
-│   ├── simulator.py         # Point d’entrée de la simulation
-│   ├── utils.py             # Fonctions physiques et outils
-│   └── config.py            # Fichier de configuration central
+│         
+├── simulator.py             # Point d’entrée de la simulation
+├── utils.py                 # Fonctions physiques et outils
+└── config.py                # Fichier de configuration central
 │
 ├── data/                    # Données d'entrée utilisateur
 │   ├── wind_data.csv        # Profil atmosphérique mesuré (radiosondage)
@@ -40,6 +41,7 @@ ballistic-simulator/
 ├── exports/                 # Dossiers de sortie (.csv, .png, .gif)
 │
 ├── README.md                # Ce fichier
+├── LICENSE                  # Projet sous licence MIT
 └── requirements.txt         # Dépendances Python
 ```
 
