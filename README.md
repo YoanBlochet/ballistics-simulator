@@ -27,7 +27,6 @@ Je précise que n'étant qu'en 1ère année, la prise en compte dynamique de la 
 
 ```
 ballistic-simulator/
-│
 │         
 ├── simulator.py             # Point d’entrée de la simulation
 ├── utils.py                 # Fonctions physiques et outils
