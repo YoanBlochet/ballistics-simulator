@@ -1,7 +1,7 @@
 # 🚀 Simulateur Balistique Atmosphérique – Python
 
 Projet personnel développé en tant qu'élève ingénieur en 1ère année à l’[ISAE-ENSMA](https://www.ensma.fr)
-Ce simulateur modélise la trajectoire d’un missile/projetile dans un environnement atmosphérique 3D, avec prise en compte fine de nombreux phénomènes physiques. Il se veut particulièrement modulable et personnalisable.
+Ce simulateur modélise la trajectoire d’un missile/projetile dans un environnement atmosphérique 3D, avec prise en compte de nombreux phénomènes physiques. Il se veut particulièrement modulable et personnalisable.
 
 Ce projet vise à démontrer des compétences en modélisation physique, calcul scientifique, architecture logicielle Python et visualisation.
 Je précise que n'étant qu'en 1ère année, la prise en compte dynamique de la portance et de la trainée est partiellement simplifiée.
