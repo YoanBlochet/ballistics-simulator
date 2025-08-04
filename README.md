@@ -4,21 +4,21 @@ Projet personnel développé en tant qu'élève ingénieur en 1ère année à l�
 Ce simulateur modélise la trajectoire d’un missile/projetile dans un environnement atmosphérique 3D, avec prise en compte fine de nombreux phénomènes physiques. Il se veut particulièrement modulable et personnalisable.
 
 Ce projet vise à démontrer des compétences en modélisation physique, calcul scientifique, architecture logicielle Python et visualisation.
-Je précise que n'étant qu'en 1ère année, la prise en compte dynamique de la portance et de la trainée sont partiellement simplifiés.
+Je précise que n'étant qu'en 1ère année, la prise en compte dynamique de la portance et de la trainée est partiellement simplifiée.
 
 ---
 
-## 🧠 Fonctionnalités majeures
+## 🧠 Fonctionnalités principales
 
 * 🌍 Gravité variable avec l’altitude
-* 🌬️ Modélisation avancée du vent (profil réel ou vent constant)
+* ☁️ Modélisation avancée du vent (profil réel ou vent constant)
 * 💨 Trainée aérodynamique dynamique (selon Mach, angle d’attaque, profil nez)
-* 🪂 Portance aérodynamique avec modèle ou profil CSV dynamique
+* ✈️ Portance aérodynamique avec modèle ou profil CSV dynamique
 * 🔁 Effet Magnus (si rotation active)
 * 🌐 Effet Coriolis + variation dynamique de latitude
 * 🔥 Propulsion avec combustion (masse variable ou profils de varariation masse/pousssée CSV)
 * ⚙️ Solveur numérique adaptatif avec profils prédéfinis (RK45, DOP853, etc.)
-* 🧪 Export des données (CSV, PNG, GIF)
+* 🖨️ Export des données (CSV, PNG, GIF)
 * 📊 Visualisations 2D/3D dynamiques + animation temps réel
 
 ---
@@ -30,16 +30,16 @@ ballistic-simulator/
 │         
 ├── simulator.py             # Point d’entrée de la simulation
 ├── utils.py                 # Fonctions physiques et outils
-└── config.py                # Fichier de configuration central
+└── config.py                # Fichier de configuration
 │
 ├── data/                    # Données d'entrée utilisateur
-│   ├── wind_data.csv        # Profil atmosphérique mesuré (radiosondage)
+│   ├── wind_data.csv        # Profil atmosphérique  (radiosondage)
 │   ├── aero_data.csv        # Profil aérodynamique du projectile (soufflerie)
 │   └── thrust_data.csv      # Profil de poussée temporel (essais moteur)
 │
 ├── exports/                 # Dossiers de sortie (.csv, .png, .gif)
 │
-├── README.md                # Ce fichier
+├── README.md                # Le fichier que vous lisez 😆
 ├── LICENSE                  # Projet sous licence MIT
 └── requirements.txt         # Dépendances Python
 ```
@@ -98,7 +98,7 @@ ballistic-simulator/
 
 ---
 
-### 🌬️ Vent atmosphérique
+### ☁️ Vent atmosphérique
 
 | Paramètre          | Description                    |
 | ------------------ | ------------------------------ |
